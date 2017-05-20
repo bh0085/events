@@ -1,0 +1,7 @@
+setup.py
+AERONAUT_events.egg-info/PKG-INFO
+AERONAUT_events.egg-info/SOURCES.txt
+AERONAUT_events.egg-info/dependency_links.txt
+AERONAUT_events.egg-info/not-zip-safe
+AERONAUT_events.egg-info/requires.txt
+AERONAUT_events.egg-info/top_level.txt

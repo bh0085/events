@@ -2,28 +2,23 @@
 {% block content %}
 
 
-
-
-<div class="view">
-  <ul>
-    <li>ID {{event.id}}</li>
-    <li>NAME {{event.name}}</li>
-    <li>DATE {{event.date}}</li>
-  </ul>
+<div class="viewedit view">
+  <div class="view">
+    <dl>
+      {% for k,v in event_field_defs.iteritems() %}
+      <dt>{{k}}</dt><dd>{{event[k]}}</dd>
+      {% endfor %}
+    </dl>    
+  </div>
+  <div class="edit">
+    <form id="edit-event" action="/api/events/{{event.id}}" method="post">
+      {% for k,v in event_field_defs.iteritems() %}
+      <input name="{{k}}" type="{{'date' if v =='date' else 'text'}}" value="{{event[k]}}"/>
+      {% endfor %}
+      <input type="submit"/>
+    </form>
+  </div>
 </div>
-
-<div class="edit">
-  <form id="edit-event" action="/api/events/{{event.id}}" method="post">
-
-    {% for k,v in event_field_defs.iteritems() %}
-    <input name="{{k}}" type="{{'date' if v =='date' else 'text'}}" value="{{getattr(event,
-k)}}"/>
-    {% endfor %}
-    <input type="submit"/>
-  </form>
-  
-</div>
-
 
 {% endblock %}
 

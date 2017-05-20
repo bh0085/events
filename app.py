@@ -9,6 +9,8 @@ from datetime import date
 from flask import Flask
 from flask import render_template, redirect, request, url_for, session as flask_session
 from flask_restful import Api, Resource, reqparse, abort, fields, inputs, marshal_with
+from flask_assets import Environment, Bundle
+
 
 from db import Session
 from flask_sqlalchemy_session import flask_scoped_session
@@ -17,6 +19,17 @@ from models import Event, Partner
 
 app = Flask(__name__)
 api = Api(app)
+
+
+
+
+assets = Environment(app)
+assets.url = app.static_url_path
+scss = Bundle('event.scss', 'base.scss', filters='pyscss', output='all.css')
+assets.register('scss_all', scss)
+
+
+
 session = flask_scoped_session(Session, app)
 
 def date_from_iso8601(date_str):
@@ -51,7 +64,7 @@ event_field_defs = {
     'tickets':"text",
 }
 
-event_fields = dict( [k,fields_map[v]] for k,v in event_field_defs.iteritems()])
+event_fields = dict( [(k,fields_map[v]) for k,v in event_field_defs.iteritems()])
 
 
 event_parser = reqparse.RequestParser()

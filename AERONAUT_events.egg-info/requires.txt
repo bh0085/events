@@ -1,5 +1,6 @@
 flask
 flask-restful
+flask_assets
 sqlalchemy
 flask-sqlalchemy-session
 aniso8601
