@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for event in events %}
+        {{ event.id }} {{ event.date }} {{ event.name }} <br />
+    {% endfor %}
+{% endblock %}

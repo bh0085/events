@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+
+
+<div class="view">
+  <ul>
+    <li>ID {{event.id}}</li>
+    <li>NAME {{event.name}}</li>
+    <li>DATE {{event.date}}</li>
+  </ul>
+</div>
+
+<div class="edit">
+  <form id="edit-event" action="/api/events/{{event.id}}" method="post">
+
+    {% for f in event_fields.keys() %}
+    
+    <input name="{{f}}" type="text" value="{{event.name}}"/>
+    <!-- <input name="date" type="date" value="{{event.date}}"/>-->
+    {% endfor %}
+    <input type="submit"/>
+  </form>
+  
+</div>
+
+
+{% endblock %}
+
+
