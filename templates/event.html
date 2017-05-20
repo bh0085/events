@@ -15,10 +15,9 @@
 <div class="edit">
   <form id="edit-event" action="/api/events/{{event.id}}" method="post">
 
-    {% for f in event_fields.keys() %}
-    
-    <input name="{{f}}" type="text" value="{{event.name}}"/>
-    <!-- <input name="date" type="date" value="{{event.date}}"/>-->
+    {% for k,v in event_field_defs.iteritems() %}
+    <input name="{{k}}" type="{{'date' if v =='date' else 'text'}}" value="{{getattr(event,
+k)}}"/>
     {% endfor %}
     <input type="submit"/>
   </form>

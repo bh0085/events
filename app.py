@@ -22,26 +22,37 @@ session = flask_scoped_session(Session, app)
 def date_from_iso8601(date_str):
     return aniso8601.parse_date(date_str)
 
-event_fields = {
-    'id'        : fields.Integer(default=None),
-    'date'      : fields.DateTime('iso8601'),
-    'name'      : fields.String,
-    'category'  : fields.String,
-    'category2' : fields.String,
-    'description':fields.String,
-    'end': fields.String,
-    'extlink':fields.String,
-    'image':fields.String,
-    'keywords':fields.String,
-    'location':fields.String,
-    'pri':fields.String,
-    'recipe_num':fields.String,
-    'band_name':fields.String,
-    'series':fields.String,
-    'source':fields.String,
-    'start':fields.String,
-    'tickets':fields.String,
+fields_map = {
+    "text":fields.String,
+    "date":fields.DateTime('iso8601'),
+    "id":fields.Integer(default=None)
+    }
+
+
+
+event_field_defs = {
+    'id'        : "id",
+    'date'      : "date",
+    'name'      : "text",
+    'category'  : "text",
+    'category2' : "text",
+    'description':"text",
+    'end': "text",
+    'extlink':"text",
+    'image':"text",
+    'keywords':"text",
+    'location':"text",
+    'pri':"text",
+    'recipe_num':"text",
+    'band_name':"text",
+    'series':"text",
+    'source':"text",
+    'start':"text",
+    'tickets':"text",
 }
+
+event_fields = dict( [k,fields_map[v]] for k,v in event_field_defs.iteritems()])
+
 
 event_parser = reqparse.RequestParser()
 event_parser.add_argument('date',         type=date_from_iso8601,  required=True)
@@ -100,13 +111,10 @@ def index():
 @app.route('/event/<id>',  methods=['GET', 'POST'])
 def event(id):
     event = session.query(Event).get(id)
-    for k, v in event_fields.iteritems():
-        raise Exception()
-        
     return render_template('event.html',
                            event = event,
                            page={"id":"event"},
-                           fields=event_fields)
+                           event_field_defs=event_field_defs)
 
 
 if __name__ == '__main__':
