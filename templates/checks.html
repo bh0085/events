@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-xs-12">
+      <h1>CHECKS</h1><h2>WEEK OF {{page.week |datetime}}</h2>
+      {% for group in events|sort(attribute='date') |groupby('date') %}
+      <div class="attribute-group day-group grp-{{group.grouper}}">
+	<div class="group-header ">{{ group.grouper }}</div>
+	{% for event in group.list  %}
+	<a href="/event/{{event.id}}">{{ event.payment }}</a>
+	<dl>
+	  {% if event.aero_email != "" %}<dt>aero</dt>:<dd> {{event.aero_email}}</dd>{% endif %}
+	  {% if event.partner_name != "" %}<dt>contact</dt>:<dd> {{event.aero_email}}</dd>{% endif %}
+	  {% if event.partner_email != "" %}<dt>email</dt>:<dd> {{event.partner_email}}</dd>{% endif %}
+	  {% if event.source != "" %}<dt>source</dt>:<dd> {{event.source}}</dd>{% endif %}
+	</dl>
+	{% endfor %}
+
+      </div>
+      {% endfor %}
+
+    </div>
+  </div> 
+</div>
+{% endblock %}

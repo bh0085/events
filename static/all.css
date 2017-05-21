@@ -1,0 +1,81 @@
+body {
+  font-family: courier; }
+
+  .navbar {
+    text-align: center; }
+
+    dt:before {
+      content: ' ';
+      display: block; }
+
+      dt {
+        display: inline; }
+
+        dd {
+          display: inline; }
+
+body.page-event .container, body.page-new-event .container {
+  padding-left: 100px; }
+  body.page-event .editable.edit-mode .edit-button,
+  body.page-new-event .editable.edit-mode .edit-button {
+    display: none; }
+  body.page-event .editable.view-mode .submit-button,
+  body.page-new-event .editable.view-mode .submit-button {
+    display: none; }
+body.page-event .form-state input, body.page-new-event .form-state input {
+  color: white;
+  border: none;
+  padding: 10px; }
+  body.page-event .form-state input.edit-input,
+  body.page-new-event .form-state input.edit-input {
+    background-color: orange; }
+    body.page-event .form-state input.submit-input,
+    body.page-new-event .form-state input.submit-input {
+      background-color: green; }
+body.page-event .attribute-group, body.page-new-event .attribute-group {
+  margin-top: 10px;
+  margin-top: 20px; }
+  body.page-event .attribute-group.grp-0, body.page-new-event .attribute-group.grp-0 {
+    display: none; }
+    body.page-event .attribute-group:not(.grp-1),
+    body.page-new-event .attribute-group:not(.grp-1) {
+      opacity: 0.5; }
+body.page-event .view-mode .form-group .form-control,
+body.page-new-event .view-mode .form-group .form-control {
+  border: 1px solid transparent; }
+  body.page-event .edit-mode .form-group .form-control,
+  body.page-new-event .edit-mode .form-group .form-control {
+    border: 1px solid lightgray; }
+    body.page-event .form-group .form-control,
+    body.page-new-event .form-group .form-control {
+      display: inline-block;
+      border: none;
+      box-shadow: none;
+      border-radius: 0px;
+      padding-left: 0px; }
+      body.page-event .form-group input, body.page-new-event .form-group input {
+        max-width: 25em; }
+
+.day-group {
+  margin-top: 20px; }
+
+  .group-header {
+    font-weight: bold; }
+
+    .weekday {
+      color: blue;
+      text-transform: uppercase; }
+      .weekday.wed {
+        color: #FF9800; }
+        .weekday.thu {
+          color: #F44336; }
+          .weekday.fri {
+            color: #9C27B0; }
+            .weekday.sat {
+              color: #9C27B0; }
+              .weekday.sun {
+                color: #4CAF50; }
+                .weekday.mon {
+                  color: #FFEB3B; }
+                  .weekday.tue {
+                    color: #000000; }

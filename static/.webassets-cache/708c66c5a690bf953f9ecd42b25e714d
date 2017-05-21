@@ -1,0 +1,3 @@
+Vbody .editselect:checked ~ .view {\u000a  display: none; }\u000a  body .editselect:not(:checked) ~ .edit {\u000a    display: none; }\u000abody .attribute-group {\u000a  margin-top: 10px; }\u000a  body .attribute-group.grp-0 {\u000a    display: none; }\u000a    body .attribute-group:not(.grp-1) {\u000a      opacity: 0.5; }\u000abody .edit input {\u000a  max-width: 200px; }\u000a
+p1
+.

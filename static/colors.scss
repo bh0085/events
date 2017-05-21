@@ -1,0 +1,37 @@
+//colors from material design guide
+$red:#F44336;
+$blue:#9C27B0;
+$indigo:#3F51B5;
+$purple:#9C27B0;
+$green:#4CAF50;
+$deeporange:#FF5722;
+$orange:#FF9800;
+$bluegray:#607D8B;
+$yellow:#FFEB3B;
+$black:#000000;
+
+$green-light: lighten($green, 50%);
+$green-dark: darken($green, 20%);
+ 
+$orange-light: lighten($orange, 50%);
+$orange-dark: darken($orange 20%);
+ 
+$purple-light: lighten($purple, 50%);
+$purple-dark: darken($purple, 20%);
+ 
+/* descriptive variables */
+$color-brand: $green;
+$color-primary: $orange;
+$color-secondary: $purple;
+
+$color-inactive:$bluegray;
+$color-cta: $orange;
+$color-submit:$green;
+
+$color-wed:$orange;
+$color-thu:$red;
+$color-fri:$purple;
+$color-sat:$blue;
+$color-sun:$green;
+$color-mon:$yellow;
+$color-tue:$black;

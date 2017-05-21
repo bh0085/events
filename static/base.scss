@@ -1,0 +1,18 @@
+@import "colors";
+
+body{
+    font-family:courier;
+
+}
+
+.navbar{
+    text-align:center;
+}
+
+dt:before { content: ' '; display: block; }
+dt{
+    display:inline;
+}
+dd{
+    display:inline;
+}

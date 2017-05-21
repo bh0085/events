@@ -1,0 +1,3 @@
+Vbody .editselect:checked ~ .view {\u000a  display: none; }\u000a  body .editselect:not(:checked) ~ .edit {\u000a    display: none; }\u000a
+p1
+.

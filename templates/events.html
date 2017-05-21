@@ -1,6 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for event in events %}
-        {{ event.id }} {{ event.date }} {{ event.name }} <br />
-    {% endfor %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-xs-12">
+      {% for group in events|sort(attribute='date') |groupby('date') %}
+      <div class="attribute-group day-group grp-{{group.grouper}}">
+	<div class="group-header "><span class="weekday  {{ group.grouper | weekday }}">{{ group.grouper | weekday }}</span> {{ group.grouper }}</div>
+	{% for event in group.list  %}
+	{{ event.start | time }} <a href="/event/{{event.id}}">{{ event.name }}</a><br />
+	{% endfor %}
+
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
 {% endblock %}

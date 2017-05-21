@@ -1,0 +1,66 @@
+@import "colors";
+
+body.page-event, body.page-new-event{
+
+    
+
+    .container{ padding-left:100px; }
+ 
+  
+
+    .editable{
+	&.edit-mode{
+	    .edit-button{display:none;}
+	}
+	&.view-mode{
+	    .submit-button{display:none;}
+	}
+    }
+    .form-state{
+	input{
+	    color:white;
+	    border:none;
+	    padding:10px;
+	    &.edit-input{
+		background-color:$color-cta;
+	    }
+	    &.submit-input{
+		background-color:$color-submit;
+	    }
+	}
+    }
+	
+   
+
+    .attribute-group{
+	margin-top:10px;
+	margin-top:20px;
+	&.grp-0{
+	    display:none;
+	}
+	&:not(.grp-1){
+	    opacity:.5;
+	}
+    }
+    .view-mode .form-group .form-control{
+	border: 1px solid transparent;
+    }
+    .edit-mode .form-group .form-control{
+	border:1px solid lightgray;
+	
+    }
+    
+    .form-group{
+	.form-control{
+	    display:inline-block;
+	    border: none;
+	    box-shadow: none;
+	    border-radius: 0px;
+	    padding-left:0px;
+	}
+	input{
+	    max-width:25em;
+
+	}
+    }
+}

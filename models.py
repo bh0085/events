@@ -32,7 +32,32 @@ class Event(Base):
 
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
-    name = Column(Unicode(255), nullable=False)
+    name = Column(Unicode(255), nullable=False,default="")
+    start = Column(Unicode(255), nullable=False,default="12:00 AM")
+    end = Column(Unicode(255), nullable=False,default="")
+    category = Column(Unicode(255), nullable=False,default="")
+    description = Column(Unicode(255), nullable=False,default="")
+    location = Column(Unicode(255), nullable=False,default="")
+    extlink = Column(Unicode(255), nullable=False,default="")
+    tickets = Column(Unicode(255), nullable=False,default="")
+    pri = Column(Unicode(255), nullable=False,default="")
+    recipe_num = Column(Unicode(255), nullable=False,default="")
+    band_name = Column(Unicode(255), nullable=False,default="")
+    series = Column(Unicode(255), nullable=False,default="")
+    source = Column(Unicode(255), nullable=False,default="")
+    image = Column(Unicode(255), nullable=False,default="")
+    keywords = Column(Unicode(255), nullable=False,default="")
+    category2 = Column(Unicode(255), nullable=False,default="")
+    marketing = Column(Unicode(255), nullable=False,default="")
+    color = Column(Unicode(255), nullable=False,default="")
+    
+    aero_email = Column(Unicode(255), nullable=False,default="")
+    notes = Column(Unicode(1023), nullable=False,default="")
+    partner_name = Column(Unicode(255), nullable=False,default="")
+    partner_email = Column(Unicode(255), nullable=False,default="")
+    payment = Column(Unicode(255), nullable=False,default="")
+    pending = Column(Unicode(255), nullable=False,default="")
+    private = Column(Unicode(255), nullable=False,default="")
 
 
 class Partner(Base):
@@ -42,6 +67,9 @@ class Partner(Base):
     name = Column(Unicode(255), nullable=False)
     #events = relationship('Event')
 
+import json, os, pprint
+
+    
 def main():  
     from sqlalchemy import create_engine
     from settings import DB_URI
@@ -49,13 +77,35 @@ def main():
     engine = create_engine(DB_URI)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    events = [
-        Event(date=date.today(), name='test event'),
-        Event(date=date.today()+timedelta(days=1), name='test event2'),
-        Event(date=date.today()+timedelta(days=2), name='test event3'),
-    ]
+
+    data_dir="_data"
+
+
+
+    events = []
+    
+    with open(os.path.join(data_dir,"events1.json")) as f:
+            event_data = json.load(f)["all_events"]
+    for e in event_data:
+        e_cleaned = dict(**e)
+        e_cleaned["date"] = dateparser.parse(e["date"])
+        events.append(Event(**e_cleaned))
+
+    
+    with open(os.path.join(data_dir,"past_events1.json")) as f:
+            event_data = json.load(f)
+    for e in event_data:
+        e_cleaned = dict(**e)
+        e_cleaned["date"] = dateparser.parse(e["date"])
+        events.append(Event(**e_cleaned))
+
+
+        
+
     session.add_all(events)
     session.commit()
+
+
 
 if __name__ == "__main__":
     main()

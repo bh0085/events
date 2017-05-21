@@ -5,3 +5,4 @@ sqlalchemy
 flask-sqlalchemy-session
 aniso8601
 alembic
+pyscss
