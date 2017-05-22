@@ -8,6 +8,8 @@ import sqlite3
 
 from decimal import Decimal
 from datetime import date, datetime, timedelta
+import dateparser
+
 
 from sqlalchemy.orm import relationship, backref, configure_mappers, synonym
 from sqlalchemy.ext.declarative import declarative_base
@@ -97,7 +99,10 @@ def main():
     for e in event_data:
         e_cleaned = dict(**e)
         e_cleaned["date"] = dateparser.parse(e["date"])
-        events.append(Event(**e_cleaned))
+        current_time = datetime.utcnow()
+        week_start = current_time - timedelta(days=current_time.weekday()+7)
+        if e_cleaned["date"] < week_start:       
+            events.append(Event(**e_cleaned))
 
 
         

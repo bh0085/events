@@ -14,6 +14,12 @@ body {
         dd {
           display: inline; }
 
+          body.page-index ul li {
+            list-style: none;
+            display: inline-block; }
+            body.page-index ul li:not(:last-child):after {
+              content: ", "; }
+
 body.page-event .container, body.page-new-event .container {
   padding-left: 100px; }
   body.page-event .editable.edit-mode .edit-button,

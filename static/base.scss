@@ -16,3 +16,16 @@ dt{
 dd{
     display:inline;
 }
+
+
+body.page-index{
+    ul{
+	li{
+	    list-style:none;
+	    display:inline-block;
+	    &:not(:last-child):after{
+		content:", ";
+	    }
+	}
+    }
+}

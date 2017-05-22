@@ -214,10 +214,37 @@ app.jinja_env.filters['weekday'] = weekday
 
 @app.route('/')
 def index():
-    events = session.query(Event).all()
-    current_time = datetime.datetime.utcnow()
-    month_start = current_time - datetime.timedelta(days=current_time.day)
-    events = session.query(Event).filter(Event.date > month_start).all()
+    filters = request.args.get('filters') or ["thismonth","public", "duck"]
+
+
+    events_q = session.query(Event)
+    
+    if "thismonth" in filters:
+        current_time = datetime.datetime.utcnow()
+        month_start = current_time - datetime.timedelta(days=current_time.day)
+        events_q = events_q.filter(Event.date > month_start)
+    if "thisweek" in filters:
+        current_time = datetime.datetime.utcnow()
+        week_start = current_time - datetime.timedelta(days=current_time.weekday())
+        week_end = current_time - datetime.timedelta(days= current_time.weekday()-7)
+        events_q = events_q.filter(Event.date > week_start).filter(Event.date <= week_end)
+            
+    if "public" in filters:
+        events_q = events_q.filter(Event.private != "")
+    if "duck" in filters:
+        events_q = events_q.filter(Event.source == "duck")
+    if "checks" in filters:
+        events_q = events_q.filter(Event.payment !="")
+    if "music" in filters:
+        events_q = events_q.filter(Event.category == "music")
+    if "future" in filters:
+        events_q = events_q.filter(Event.date > datetime.datetime.utcnow())
+
+        
+    events = events_q.all()
+
+    
+    
     return render_template('events.html',
                            events=events,
                            page={"id":"index"},
@@ -233,11 +260,7 @@ def checks():
     return render_template('checks.html',
                            events=events,
                            page={"id":"checks",
-                                 "week":week_start},
-                           )
-
-
-
+                                 "week":week_start})
 @app.route('/event/<id>')
 def event(id):
     event = session.query(Event).get(id)
@@ -251,7 +274,6 @@ def new_event():
     return render_template('new-event.html',
                            page={"id":"new-event"},
                            event_field_defs=jinja_event_defs)
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
