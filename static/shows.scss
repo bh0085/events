@@ -1,0 +1,61 @@
+@import "colors";
+
+
+body.page-shows{
+    .arrow{
+	position:fixed;
+	bottom:0px;
+	margin:100px;
+	margin-bottom:0px;
+	margin-right:0px;
+	margin-left:0px;
+	&.cans{
+	    left:0px;
+	    
+	}
+	&.posters{
+	    right:0px;
+	    
+	}
+    }
+    .container{
+	padding:0px;
+	margin:0px;
+	
+    }
+    padding-left:100px;
+    .chapter{
+	margin-bottom:100px;
+    }
+    
+    background-color:black;
+    font-size:6.5em;
+    font-family:courier;
+    color:white;
+
+    .nowplaying{
+	color:$yellow;
+	dd:after{
+	    content:"(now playing!)";
+	}
+    }
+
+    .event-title{
+	text-transform:uppercase;
+    }
+    
+    h1{
+	font-weight:bold;
+	font-size:100%;
+    }
+    h2{
+	font-size:100%;
+    }
+    a{
+	color:white;
+	text-decoration:none;
+    }
+    nav{
+	display:none;
+    }
+}

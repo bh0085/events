@@ -8,6 +8,7 @@ from datetime import date
 import datetime
 import dateparser
 import babel.dates
+from sqlalchemy import or_
 
 
 from flask import Flask
@@ -18,6 +19,7 @@ from flask_assets import Environment, Bundle
 
 from db import Session
 from flask_sqlalchemy_session import flask_scoped_session
+from sqlalchemy import func
 
 from models import Event, Partner
 
@@ -29,7 +31,7 @@ api = Api(app)
 
 assets = Environment(app)
 assets.url = app.static_url_path
-scss = Bundle( 'base.scss','event.scss','collections.scss', filters='pyscss', output='all.css')
+scss = Bundle( 'base.scss','event.scss','shows.scss','collections.scss', filters='pyscss', output='all.css')
 assets.register('scss_all', scss)
 
 
@@ -157,11 +159,8 @@ class EventListResource(Resource):
 
     @marshal_with(event_fields)
     def post(self):
-        print "STARTING"
         args = event_parser.parse_args()
         obj = Event(**args)
-        print obj
-        print "WORKING"
         session.add(obj)
         session.commit()
         session.refresh(obj)
@@ -183,7 +182,7 @@ def format_datetime(value, format='short'):
     elif format == 'medium':
         format="EE dd.MM.y HH:mm"
     elif format == 'short':
-        format="EE MMM d"
+        format="MMM d"
     return babel.dates.format_datetime(value, format)
 
 def format_time(value):
@@ -211,10 +210,14 @@ app.jinja_env.filters['datetime'] = format_datetime
 app.jinja_env.filters['time'] = format_time
 app.jinja_env.filters['weekday'] = weekday
 
+from sqlalchemy.sql import extract
+
 
 @app.route('/')
 def index():
-    filters = request.args.get('filters') or ["thismonth","public", "duck"]
+    filters = request.args.get('filters') or ["future"]
+    #days = request.args.get('days')
+    #categories = request.args.get("categories")
 
 
     events_q = session.query(Event)
@@ -239,7 +242,27 @@ def index():
         events_q = events_q.filter(Event.category == "music")
     if "future" in filters:
         events_q = events_q.filter(Event.date > datetime.datetime.utcnow())
+    if "past" in filters:
+        events_q = events_q.filter(Event.date < datetime.datetime.utcnow())
+    if "day-sun" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 0)
+    if "day-mon" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 1)
+    if "day-tue" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 2)
+    if "day-wed" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 3)
+    if "day-thu" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 4)
+    if "day-fri" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 5)
+    if "day-sat" in filters:
+        events_q = events_q.filter(extract('dow',Event.date) == 6)
 
+
+        
+        
+        
         
     events = events_q.all()
 
@@ -250,12 +273,58 @@ def index():
                            page={"id":"index"},
                            )
 
+@app.route('/shows')
+def shows():
+    events_q = session.query(Event)
+    music_events = events_q.filter(or_(Event.category == 'show', Event.category == "music", Event.category=="band"))
+    
+    today = date.today()
+
+    #day_start = date.today()
+    #day_end = current_time + datetime.timedelta(days=1)
+    #weekend_end = current_time + datetime.timedelta(days=7)
+    #yesterday = current_time + datetime.timedelta(days=-1)
+
+
+    future_events = music_events.filter(Event.date > today).all()
+
+
+    weekday = today.weekday()
+    #currently a weekend
+    if weekday in [4,5,6]:
+        weekend_start = today - datetime.timedelta(days = weekday - 4)
+    #currently a weekeday
+    else:
+        weekend_start = today + datetime.timedelta(days = 4 - weekday)
+
+    weekend_end = weekend_start + datetime.timedelta(days = 3)
+    
+    events_thisweekend = music_events\
+                         .filter(Event.date >= weekend_start)\
+                         .filter(Event.date <= weekend_end).all()
+       
+    events_today = music_events\
+                   .filter(Event.date == today).all()
+    
+
+
+    return render_template('shows.html',
+                           future_events=future_events,
+                           events_today=events_today,
+                           events_thisweekend=events_thisweekend,
+                           page={"id":"shows"},
+                           )
+
+
+
+
 @app.route('/checks')
 def checks():
     current_time = datetime.datetime.utcnow()
     week_start = current_time - datetime.timedelta(days=current_time.weekday())
     week_end = current_time - datetime.timedelta(days= current_time.weekday()-7)
 
+ 
     events = session.query(Event).filter(Event.date > week_start).filter(Event.date <= week_end).filter(Event.payment != "").all()
     return render_template('checks.html',
                            events=events,
@@ -276,4 +345,4 @@ def new_event():
                            event_field_defs=jinja_event_defs)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5000)

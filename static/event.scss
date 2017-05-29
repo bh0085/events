@@ -30,16 +30,23 @@ body.page-event, body.page-new-event{
 	}
     }
 	
-   
+
+    input:required {
+  box-shadow: 4px 4px 20px rgba(200, 0, 0, 0.85);
+}
 
     .attribute-group{
 	margin-top:10px;
-	margin-top:20px;
+	margin-top:40px;
+	input:required{
+	    border:1px solid $blue;
+	}
 	&.grp-0{
 	    display:none;
 	}
 	&:not(.grp-1){
-	    opacity:.5;
+	    
+	    label{opacity:.5;}
 	}
     }
     .view-mode .form-group .form-control{
@@ -57,6 +64,10 @@ body.page-event, body.page-new-event{
 	    box-shadow: none;
 	    border-radius: 0px;
 	    padding-left:0px;
+	}
+	label{
+	    width:200px;
+	    text-align:right;
 	}
 	input{
 	    max-width:25em;

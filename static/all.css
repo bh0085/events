@@ -34,18 +34,23 @@ body.page-event .form-state input, body.page-new-event .form-state input {
   padding: 10px; }
   body.page-event .form-state input.edit-input,
   body.page-new-event .form-state input.edit-input {
-    background-color: orange; }
+    background-color: #FF9800; }
     body.page-event .form-state input.submit-input,
     body.page-new-event .form-state input.submit-input {
-      background-color: green; }
-body.page-event .attribute-group, body.page-new-event .attribute-group {
-  margin-top: 10px;
-  margin-top: 20px; }
-  body.page-event .attribute-group.grp-0, body.page-new-event .attribute-group.grp-0 {
-    display: none; }
-    body.page-event .attribute-group:not(.grp-1),
-    body.page-new-event .attribute-group:not(.grp-1) {
-      opacity: 0.5; }
+      background-color: #4CAF50; }
+body.page-event input:required, body.page-new-event input:required {
+  box-shadow: 4px 4px 20px rgba(200, 0, 0, 0.85); }
+  body.page-event .attribute-group, body.page-new-event .attribute-group {
+    margin-top: 10px;
+    margin-top: 40px; }
+    body.page-event .attribute-group input:required,
+    body.page-new-event .attribute-group input:required {
+      border: 1px solid #9C27B0; }
+      body.page-event .attribute-group.grp-0, body.page-new-event .attribute-group.grp-0 {
+        display: none; }
+        body.page-event .attribute-group:not(.grp-1) label,
+        body.page-new-event .attribute-group:not(.grp-1) label {
+          opacity: 0.5; }
 body.page-event .view-mode .form-group .form-control,
 body.page-new-event .view-mode .form-group .form-control {
   border: 1px solid transparent; }
@@ -59,8 +64,50 @@ body.page-new-event .view-mode .form-group .form-control {
       box-shadow: none;
       border-radius: 0px;
       padding-left: 0px; }
-      body.page-event .form-group input, body.page-new-event .form-group input {
-        max-width: 25em; }
+      body.page-event .form-group label, body.page-new-event .form-group label {
+        width: 200px;
+        text-align: right; }
+        body.page-event .form-group input, body.page-new-event .form-group input {
+          max-width: 25em; }
+
+body.page-shows {
+  padding-left: 100px;
+  background-color: black;
+  font-size: 6.5em;
+  font-family: courier;
+  color: white; }
+  body.page-shows .arrow {
+    position: fixed;
+    bottom: 0px;
+    margin: 100px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px; }
+    body.page-shows .arrow.cans {
+      left: 0px; }
+      body.page-shows .arrow.posters {
+        right: 0px; }
+  body.page-shows .container {
+    padding: 0px;
+    margin: 0px; }
+    body.page-shows .chapter {
+      margin-bottom: 100px; }
+      body.page-shows .nowplaying {
+        color: #FFEB3B; }
+        body.page-shows .nowplaying dd:after {
+          content: "(now playing!)"; }
+  body.page-shows .event-title {
+    text-transform: uppercase; }
+    body.page-shows h1 {
+      font-weight: bold;
+      font-size: 100%; }
+      body.page-shows h2 {
+        font-size: 100%; }
+        body.page-shows a {
+          color: white;
+          text-decoration: none; }
+          body.page-shows nav {
+            display: none; }
 
 .day-group {
   margin-top: 20px; }
@@ -85,3 +132,12 @@ body.page-new-event .view-mode .form-group .form-control {
                   color: #FFEB3B; }
                   .weekday.tue {
                     color: #000000; }
+                    .weekday a {
+                      text-decoration: underline; }
+                      .weekday a.wed {
+                        color: #FF9800; }
+      .weekday a.thu {
+        color: red; }
+
+a {
+  text-decoration: underline; }

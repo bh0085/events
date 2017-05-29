@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="">
+  <div class="row">
+    <div class="chapter tonight">
+      <h1>TONIGHT:</h1>
+      <dl>
+
+	{% for event in events_today %}
+	<div class="">
+	  <dt class="act1 headliner">
+	    <h2>ACT 1 {{ event.start | time  }} <a href="/event/{{event.id}}" class="event-title">{{ event.name }}</a><br /></h2>
+	  </dt>
+	  <dd>
+	    {% if event.description != "" %}({{event.description}}){% endif %}
+	  </dd>
+	</div>
+	{% endfor %}
+      </dl>
+      </div>
+
+      <div class="chapter thisweekend">
+	<dl class="">
+	</dl>
+      </div>
+      
+
+      
+      <div class="chapter upcoming">
+	<h1>UPCOMING LIVE SHOWS</h1>
+	
+
+	
+	<div class="row">
+	  <div class="col-md-9 col-md-offset-3 col-xs-12">
+	    {% for group in future_events|sort(attribute='date') |groupby('date') %}
+	    {% for event in group.list  %}
+	    <span class="weekday {{event.date | weekday}}">{{event.date | weekday}}</span>
+	    {{ event.date | datetime  }} <a href="/event/{{event.id}}" class="event-title">{{ event.name }}</a><br />
+	    {% endfor %}
+	    {% endfor %}
+	  </div>
+	</div>
+      </div>
+    </div>
+  </div>
+  <img class="arrow cans" src="/static/img/cans.svg"/>
+  <img class="arrow posters" src="/static/img/posters.svg"/>
+
+</div>
+{% endblock %}

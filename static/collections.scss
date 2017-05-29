@@ -20,11 +20,9 @@
     &.fri{
 	color:$color-fri;
     }
-    
     &.sat{
 	color:$color-sat;
     }
-    
     &.sun{
 	color:$color-sun;
     }
@@ -34,4 +32,16 @@
     &.tue{
 	color:$color-tue;
     }
+    a{
+	text-decoration:underline;
+	&.wed{
+	    color:$color-wed;
+	}
+    }
+    a.thu{
+	color:red;
+    }
+}
+a{
+    text-decoration:underline;
 }
