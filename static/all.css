@@ -28,18 +28,37 @@ body.page-event .container, body.page-new-event .container {
   body.page-event .editable.view-mode .submit-button,
   body.page-new-event .editable.view-mode .submit-button {
     display: none; }
-body.page-event .form-state input, body.page-new-event .form-state input {
-  color: white;
-  border: none;
-  padding: 10px; }
-  body.page-event .form-state input.edit-input,
-  body.page-new-event .form-state input.edit-input {
-    background-color: #FF9800; }
-    body.page-event .form-state input.submit-input,
-    body.page-new-event .form-state input.submit-input {
-      background-color: #4CAF50; }
-body.page-event input:required, body.page-new-event input:required {
-  box-shadow: 4px 4px 20px rgba(200, 0, 0, 0.85); }
+    body.page-event .editable.view-mode .delete-button,
+    body.page-new-event .editable.view-mode .delete-button {
+      display: none; }
+body.page-event .form-state .submit-group,
+body.page-new-event .form-state .submit-group {
+  display: inline-block; }
+  body.page-event .form-state input, body.page-new-event .form-state input {
+    color: white;
+    padding: 10px;
+    display: inline-block;
+    cursor: pointer; }
+    body.page-event .form-state input.edit-input,
+    body.page-new-event .form-state input.edit-input {
+      background-color: #FF9800; }
+      body.page-event .form-state input.delete-input,
+      body.page-new-event .form-state input.delete-input {
+        background-color: #F44336;
+        width: 15em; }
+        body.page-event .form-state input.submit-input,
+        body.page-new-event .form-state input.submit-input {
+          background-color: #4CAF50;
+          width: 15em; }
+body.page-event label, body.page-new-event label {
+  font-weight: normal; }
+  body.page-event label.required, body.page-new-event label.required {
+    font-weight: bold; }
+    body.page-event label.required:before, body.page-new-event label.required:before {
+      content: "*"; }
+body.page-event input.form-control.form-control.form-control:required,
+body.page-new-event input.form-control.form-control.form-control:required {
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85); }
   body.page-event .attribute-group, body.page-new-event .attribute-group {
     margin-top: 10px;
     margin-top: 40px; }
@@ -53,14 +72,14 @@ body.page-event input:required, body.page-new-event input:required {
           opacity: 0.5; }
 body.page-event .view-mode .form-group .form-control,
 body.page-new-event .view-mode .form-group .form-control {
-  border: 1px solid transparent; }
+  border: 1px solid lightgray; }
   body.page-event .edit-mode .form-group .form-control,
   body.page-new-event .edit-mode .form-group .form-control {
     border: 1px solid lightgray; }
     body.page-event .form-group .form-control,
     body.page-new-event .form-group .form-control {
       display: inline-block;
-      border: none;
+      border: 1px solid lightgray;
       box-shadow: none;
       border-radius: 0px;
       padding-left: 0px; }
@@ -69,6 +88,20 @@ body.page-new-event .view-mode .form-group .form-control {
         text-align: right; }
         body.page-event .form-group input, body.page-new-event .form-group input {
           max-width: 25em; }
+          body.page-event .form-group textarea.form-control.form-control,
+          body.page-new-event .form-group textarea.form-control.form-control {
+            max-width: 25em;
+            border: 1px solid lightgray; }
+            body.page-event .form-group select.form-control.form-control,
+            body.page-new-event .form-group select.form-control.form-control {
+              max-width: 25em;
+              border: 1px solid lightgray; }
+              body.page-event .form-group textarea, body.page-new-event .form-group textarea {
+                height: 100px;
+                vertical-align: text-top; }
+                body.page-event .form-group textarea ~ label,
+                body.page-new-event .form-group textarea ~ label {
+                  vertical-align: text-top; }
 
 body.page-shows {
   padding-left: 100px;
@@ -129,9 +162,9 @@ body.page-shows {
               .weekday.sun {
                 color: #4CAF50; }
                 .weekday.mon {
-                  color: #FFEB3B; }
+                  color: lighten(#F44336 50%); }
                   .weekday.tue {
-                    color: #000000; }
+                    color: #FFEB3B; }
                     .weekday a {
                       text-decoration: underline; }
                       .weekday a.wed {

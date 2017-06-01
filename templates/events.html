@@ -7,16 +7,17 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-3 col-xs-12">
       <ul>
-	<li><a href="/?filters=[past]">all past events</a></li>
-	<li><a href="/?filters=[thismonth]">music this month</a></li>
-	<li><a href="/?filters=[music]">all this week</a></li><br/>
-	<li><a href="/?filters=[day-mon,future]" class="weekday mon">MON</a></li>
-	<li><a href="/?filters=[day-tue,future]" class="weekday tue">TUE</a></li>
-	<li><a href="/?filters=[day-wed,future]" class="weekday wed">WED</a></li>
-	<li><a href="/?filters=[day-thu,future]" class="weekday thu">THU</a></li>
-	<li><a href="/?filters=[day-fri,future]" class="weekday fri">FRI</a></li>
-	<li><a href="/?filters=[day-sat,future]" class="weekday sat">SAT</a></li>
-	<li><a href="/?filters=[day-sun,future]" class="weekday sun">SUN</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[past]">all past events</a></li>	
+	<li><a href="{{url_for('bookings.index')}}?filters=[thismonth]">music this month</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[music]">all this week</a></li><br/>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-mon,future]" class="weekday mon">MON</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-tue,future]" class="weekday tue">TUE</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-wed,future]" class="weekday wed">WED</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-thu,future]" class="weekday thu">THU</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-fri,future]" class="weekday fri">FRI</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-sat,future]" class="weekday sat">SAT</a></li>
+	<li><a href="{{url_for('bookings.index')}}?filters=[day-sun,future]" class="weekday sun">SUN</a></li>
+
 
 
       </ul>
@@ -28,7 +29,7 @@
       <div class="attribute-group day-group grp-{{group.grouper}}">
 	<div class="group-header "><span class="weekday  {{ group.grouper | weekday }}">{{ group.grouper | weekday }}</span> {{ group.grouper }}</div>
 	{% for event in group.list  %}
-	{{ event.start | time }} <a href="/event/{{event.id}}">{{ event.name }}</a><br />
+	{{ event.start | time }} <a href="{{url_for('bookings.event',id=event.id)}}">{{ event.name }}</a><br />
 	{% endfor %}
 
       </div>

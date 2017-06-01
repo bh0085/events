@@ -4,14 +4,16 @@ import os
 import json
 from collections import OrderedDict
 import aniso8601
-from datetime import date
+from datetime import date, timedelta
 import datetime
 import dateparser
-import babel.dates
+from operator import itemgetter
+
 from sqlalchemy import or_
 
+from flask import Blueprint
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask import render_template, redirect, request, url_for, session as flask_session
 from flask_restful import Api, Resource, reqparse, abort, fields, inputs, marshal_with
 from flask_assets import Environment, Bundle
@@ -23,10 +25,13 @@ from sqlalchemy import func
 
 from models import Event, Partner
 
-app = Flask(__name__,static_url_path='/static')
-api = Api(app)
+bookings = Blueprint('bookings', __name__,
+               template_folder='templates')
 
 
+
+app = Flask(__name__,static_url_path='/bookings/static')
+api = Api(bookings)
 
 
 assets = Environment(app)
@@ -46,20 +51,27 @@ fields_map = {
     "date":fields.DateTime('iso8601'),
     "id":fields.Integer(default=None),
     "time":fields.String,
+    "na":fields.String,
+    "bool":fields.Boolean, 
+    "select":fields.String,
+    "textarea":fields.String
     }
 
 
 
 event_field_defs = ([
     ('id'         ,{"field":"id",
-                    "grp":0}),
+                    "grp":5}),
     ('name'       ,{"field":"text",
                     "grp":1,
                     "required":True}),
     ('date'       ,{"field":"date",
                     "grp":1,
                     "required":True}),
-    ('category'   ,{"field":"text",
+    ('category'   ,{"field":"select",
+                    "grp":1,
+                    "required":True}),
+    ('location'   ,{"field":"select",
                     "grp":1,
                     "required":True}),
     ('start'      ,{"field":"time",
@@ -68,18 +80,22 @@ event_field_defs = ([
                     "grp":1}),
     ('description',{"field":"text",
                     "grp":1}),
-    ('location'   ,{"field":"text",
-                    "grp":1}),
     ('payment'  ,{"field":"text",
-                  "grp":1}),
-    ('notes'      ,{"field":"text",
+                  "grp":3}),
+    ('notes'      ,{"field":"textarea",
                     "grp":1}),
     ('extlink'    ,{"field":"text",
                     "grp":2}),
     ('tickets'    ,{"field":"text",
                     "grp":2}),
-    ('pri'        ,{"field":"text",
-                    "grp":4}),
+    ('partner_email',{"field":"text",
+                      "grp":3}),
+    ('partner_name' ,{"field":"text",
+                      "grp":3}),
+    ('pending'  ,{"field":"bool",
+                  "grp":4}),
+    ('private'  ,{"field":"bool",
+                  "grp":4}),
     ('recipe_num' ,{"field":"text",
                     "grp":5}),
     ('band_name'  ,{"field":"text",
@@ -95,17 +111,16 @@ event_field_defs = ([
     ('category2'  ,{"field":"text",
                     "grp":5}),
     ('marketing'  ,{"field":"text",
-                    "grp":5}),
-    ('aero_email' ,{"field":"text",
-                    "grp":5}),
-    ('partner_email',{"field":"text",
-                      "grp":5}),
-    ('partner_name' ,{"field":"text",
-                      "grp":5}),     
-    ('pending'  ,{"field":"text",
-                  "grp":5}),
-    ('private'  ,{"field":"text",
-                  "grp":5})
+                    "grp":5}),  
+    ('created_user',{"field":"na",
+                     "grp":5}),
+    ('updated_user',{"field":"na",
+                     "grp":5}),
+    ('created',{"field":"na",
+                "grp":5}),
+    ('updated',{"field":"na",
+                "grp":5})
+     
 ])
 
  
@@ -114,6 +129,8 @@ event_field_defs = ([
 
 jinja_event_defs = [dict(name=k,**v) for k, v in event_field_defs] 
 event_fields = dict( [(k,fields_map[v["field"]]) for k,v in event_field_defs])
+event_fields["pri"] = fields.String
+             
 event_parser = reqparse.RequestParser()
 
 
@@ -122,8 +139,15 @@ for k,data in event_field_defs:
         event_parser.add_argument(k,type =date_from_iso8601,required=True)
     if data["field"] == "text":
         event_parser.add_argument(k,required=True)
+    if data["field"] == "select":
+        event_parser.add_argument(k,required=True)
     if data["field"] == "time":
         event_parser.add_argument(k,required=True)
+    if data["field"] == "bool":
+        event_parser.add_argument(k,type=lambda x: True if int(x) > 0 else False ,required=True)
+    if data["field"] == "textarea":
+        event_parser.add_argument(k,required=True)
+                
 
 
 
@@ -131,7 +155,9 @@ class EventResource(Resource):
     @marshal_with(event_fields)
     def get(self, id):
         obj = session.query(Event).get(id)
+       
         if not obj: abort(404)
+        if obj.deleted: abort(404)
         return obj
 
     def delete(self, id):
@@ -147,6 +173,11 @@ class EventResource(Resource):
         obj = session.query(Event).get(id)
         for key in args:
             setattr(obj, key, args[key])
+
+        name = request.headers.get('X-Forwarded-User', "debug")
+        obj.updated_user = name
+        obj.updated =datetime.datetime.now()
+        
         session.add(obj)
         session.commit()
         session.refresh(obj)
@@ -155,15 +186,59 @@ class EventResource(Resource):
 class EventListResource(Resource):
     @marshal_with(event_fields)
     def get(self):
-        return session.query(Event).all()
+
+        filters = request.args.get('filters') or ["all"]
+        public = request.args.get('public')
+
+        query = session.query(Event).filter(Event.deleted != True)
+        
+        if "calendar" in filters:
+            start_date = date.today() -timedelta(days = 7)
+            query = query.filter(Event.date >= start_date)
+
+        if "past" in filters:
+            end_date = date.today() + timedelta(days = 7)
+            query = query.filter(Event.date < end_date)
+
+        events = query.order_by(Event.date, Event.start).all()
+
+        if public=="true":
+            filtered_events = [e for e in events if not (e.private or e.pending)]
+
+            print len(filtered_events)
+            print filtered_events[0]
+    
+            public_keys =['date', 'name', 'start', 'end', 'description', 'location', 'category', 'extlink', 'tickets', 'pri', 'source',"recipe_num", "band_name", "keywords", "category", "image", "series", "category2"]
+            
+            public_events = [dict((k, getattr(e,k)) for k in public_keys) for e in filtered_events]
+
+            public_events.sort(key=itemgetter('end'))
+            public_events.sort(key=itemgetter('start'))
+            public_events.sort(key=itemgetter('pri'))
+            public_events.sort(key=itemgetter('date'))
+            
+            return public_events
+
+        else:
+            return events
+
+        
 
     @marshal_with(event_fields)
     def post(self):
         args = event_parser.parse_args()
         obj = Event(**args)
+
+        name = request.headers.get('X-Forwarded-User', "debug")
+        obj.updated_user = name
+        obj.updated =datetime.datetime.now()
+        obj.created_user = name
+        obj.created =datetime.datetime.now()
+        
         session.add(obj)
         session.commit()
         session.refresh(obj)
+        
         return obj, 201
 
 
@@ -176,15 +251,16 @@ api.add_resource(EventResource,     '/api/events/<id>')
 
 
 
-def format_datetime(value, format='short'):
-    if format == 'full':
-        format="EEEE, d. MMMM y 'at' HH:mm"
-    elif format == 'medium':
-        format="EE dd.MM.y HH:mm"
-    elif format == 'short':
-        format="MMM d"
-    return babel.dates.format_datetime(value, format)
-
+def format_datetime(value, fmt='short'):
+    #if fmt == 'full':
+    #    fmt="EEEE, d. MMMM y 'at' HH:mm"
+    #elif fmt == 'medium':
+    #    fmt="EE dd.MM.y HH:mm"
+    #elif fmt == 'short':
+    #    fmt="MMM d"
+    #return babel.dates.format_datetime(value, fmt)
+    return value.strftime("%m %d")
+    
 def format_time(value):
     if value =="":
         return "---"
@@ -202,8 +278,8 @@ def format_time(value):
 
 def weekday(value):
     #date = dateparser.parse(value)
-    return babel.dates.format_datetime(value, "EE").lower()
-    
+    #return babel.dates.format_datetime(value, "EE").lower()
+    return value.strftime("%a").lower()
 
 
 app.jinja_env.filters['datetime'] = format_datetime
@@ -213,14 +289,16 @@ app.jinja_env.filters['weekday'] = weekday
 from sqlalchemy.sql import extract
 
 
-@app.route('/')
+@bookings.route('/')
 def index():
     filters = request.args.get('filters') or ["future"]
     #days = request.args.get('days')
     #categories = request.args.get("categories")
 
+    print 'The URL for this page is {}'.format(url_for('bookings.index'))
 
-    events_q = session.query(Event)
+
+    events_q = session.query(Event).filter(Event.deleted!= True)
     
     if "thismonth" in filters:
         current_time = datetime.datetime.utcnow()
@@ -241,9 +319,9 @@ def index():
     if "music" in filters:
         events_q = events_q.filter(Event.category == "music")
     if "future" in filters:
-        events_q = events_q.filter(Event.date > datetime.datetime.utcnow())
+        events_q = events_q.filter(Event.date >= date.today())
     if "past" in filters:
-        events_q = events_q.filter(Event.date < datetime.datetime.utcnow())
+        events_q = events_q.filter(Event.date < date.today())
     if "day-sun" in filters:
         events_q = events_q.filter(extract('dow',Event.date) == 0)
     if "day-mon" in filters:
@@ -273,9 +351,9 @@ def index():
                            page={"id":"index"},
                            )
 
-@app.route('/shows')
+@bookings.route('/shows')
 def shows():
-    events_q = session.query(Event)
+    events_q = session.query(Event).filter(Event.deleted != True)
     music_events = events_q.filter(or_(Event.category == 'show', Event.category == "music", Event.category=="band"))
     
     today = date.today()
@@ -317,32 +395,98 @@ def shows():
 
 
 
+    
 
-@app.route('/checks')
+@bookings.route('/checks')
 def checks():
     current_time = datetime.datetime.utcnow()
     week_start = current_time - datetime.timedelta(days=current_time.weekday())
     week_end = current_time - datetime.timedelta(days= current_time.weekday()-7)
 
  
-    events = session.query(Event).filter(Event.date > week_start).filter(Event.date <= week_end).filter(Event.payment != "").all()
+    events = session.query(Event).filter(Event.deleted != True).filter(Event.date > week_start).filter(Event.date <= week_end).filter(Event.payment != "").all()
     return render_template('checks.html',
                            events=events,
                            page={"id":"checks",
                                  "week":week_start})
-@app.route('/event/<id>')
+
+event_categories = [
+    "event",
+    "beer",
+    "food",
+    "band",
+    "talk",
+    "record",
+    "bike",
+    "offsite",
+    "art",
+    "chocolate",
+    "videogames",
+    "modified hours",
+    "closed"
+]
+
+locations = [
+    "",
+    "foods-hub",
+    "taproom-brewery",
+    "taproom-entry",
+    "taproom-tables",
+    "full-site",
+    "offsite",
+    "other",
+]
+
+event_grp_defs ={
+    1:{"name":"main"},
+    2:{"name":"marketing"},
+    3:{"name":"partner"},
+    4:{"name":"flags"},
+    5:{"name":""}
+}
+
+@bookings.route("/event/delete/<eventid>", methods=['GET', 'POST'])
+def delete_event(eventid):
+    obj = session.query(Event).get(eventid)
+    if not obj: abort(404)
+    obj.deleted = True;
+    session.commit()
+    print obj.deleted
+    return ""
+    
+@bookings.route('/event/<id>')
 def event(id):
     event = session.query(Event).get(id)
     return render_template('event.html',
                            event = event,
                            page={"id":"event"},
-                           event_field_defs=jinja_event_defs)
+                           event_field_defs=jinja_event_defs,
+                           selects={"category":event_categories,
+                                    "location":locations},
+                           group_defs = event_grp_defs)
 
-@app.route('/new')
+@bookings.route('/new')
 def new_event():
     return render_template('new-event.html',
                            page={"id":"new-event"},
-                           event_field_defs=jinja_event_defs)
+                           event_field_defs=jinja_event_defs,
+                           selects={"category":event_categories,
+                                    "location":locations},
+                           group_defs = event_grp_defs)
+
+
+
+app.register_blueprint(bookings, url_prefix='/bookings')
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    import argparse
+    parser = argparse.ArgumentParser(description = "debug launcher")
+    parser.add_argument('--debug', dest="debug", action="store_true")
+    args = parser.parse_args()
+
+    if args.debug:
+        app.run( debug=True, host='0.0.0.0', port=5000)
+    else:
+        app.run( host='0.0.0.0', port=5000)

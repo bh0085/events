@@ -7,27 +7,71 @@
       <div id="main-editable" class="entity event edit-mode">
 	<h2>NEW EVENT</h2><h4>DATE TBD</h4>
 
-	<form id="new-event" action="/api/events" method="post">
+	<form id="new-event" action="/bookings/api/events" method="post">
 	  <div class="form-state">
-	    <div class="form-group submit-group submit-button"><input class="submit-input" type="submit" id="submit" value="submit"/></div>
+	    <div class="form-group submit-group submit-button"><input class="submit-input" type="submit" id="submit" value="submit"/>
+	    </div>
 	  </div>
+
+	  
 	  
 	  {% for group in event_field_defs|groupby('grp') %}
 	  <div class="attribute-group grp-{{group.grouper}}">
+	    <h4>{{group_defs[group.grouper]['name']}}</h4>
 	    {% for field in group.list  %}
+	    {% if field["field"] != "na" %}
+	    
 	    
 	    <div class="form-group">
-	      <!--<label for="inp{{field['name']}}">{{field['name']}}...</label>-->
-	      <input  type="{{field['field']}}"
-		      class="form-control"
-		      name="{{field['name']}}"
+	      <label class="{{'required' if field.required}}" {% if group.grouper == 5 %}style="display:none;"{% endif %} for="inp{{field['name']}}">{{field['name']}}...</label>
+
+	      {% if field["field"] == "bool" %}
+	      <select name="{{field['name']}}"
+		      class="form-control  {{field['field']}}"
+		      id="inp{{field['name']}}">
+
+		<option value="0">No</option>
+		<option value="1">Yes</option>
+	      </select>
+
+	      {% elif field["field"] == "select" %}
+	      <select name="{{field['name']}}"
+		      class="form-control  {{field['field']}}"
 		      id="inp{{field['name']}}"
-		      placeholder="{{field['name']}}">
-	    </div>	  
+		      {{'required="true"' if field.required}}
+		      >
+
+		{% for option in selects[field['name']] %}
+		<option value="{{option}}" >{{option}}</option>
+		{% endfor %}
+	      </select>
+	      {% elif field["field"] == "textarea" %}
+	      <textarea name="{{field['name']}}"
+			class="form-control  {{field['field']}}"
+			id="inp{{field['name']}}"
+			{{'required="true"' if field.required}}
+			>
+	      </textarea>
+
+	      {% else %}
+	      <input  type="{{field['field']}}"
+		      class="form-control {{field['field']}}"
+		      name="{{field['name']}}"
+	id="inp{{field['name']}}"
+		      
+		      placeholder="{{field['name']}}"
+		      {{'required="true"' if field.required}}
+		      {% if group.grouper == 5 %}style="display:none;"{% endif %}
+
+		      >
+	      {% endif %}
+	    </div>
+
+	    {% endif %}
 	    {% endfor %}
 	  </div>
 	  {% endfor %}
-	  
+
 	</form>
       </div>
     </div>

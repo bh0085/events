@@ -14,26 +14,48 @@ body.page-event, body.page-new-event{
 	}
 	&.view-mode{
 	    .submit-button{display:none;}
+	    .delete-button{display:none;}
+
 	}
+	
     }
     .form-state{
+	.submit-group{
+	    display:inline-block;
+	}
 	input{
 	    color:white;
-	    border:none;
 	    padding:10px;
+	    display:inline-block;
+	    cursor:pointer;
 	    &.edit-input{
 		background-color:$color-cta;
 	    }
+	    &.delete-input{
+		background-color:$red;
+		width:15em;
+	    }
 	    &.submit-input{
 		background-color:$color-submit;
+		width:15em;
 	    }
 	}
     }
-	
 
-    input:required {
-  box-shadow: 4px 4px 20px rgba(200, 0, 0, 0.85);
-}
+
+    label{
+	font-weight:normal;
+    }
+    label.required{
+	&:before{
+	    content:"*";
+	}
+	font-weight:bold;
+    }
+    
+    input.form-control.form-control.form-control:required {
+	box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
+    }
 
     .attribute-group{
 	margin-top:10px;
@@ -50,7 +72,7 @@ body.page-event, body.page-new-event{
 	}
     }
     .view-mode .form-group .form-control{
-	border: 1px solid transparent;
+	border: 1px solid lightgray;
     }
     .edit-mode .form-group .form-control{
 	border:1px solid lightgray;
@@ -60,7 +82,7 @@ body.page-event, body.page-new-event{
     .form-group{
 	.form-control{
 	    display:inline-block;
-	    border: none;
+	    border: 1px solid lightgray;
 	    box-shadow: none;
 	    border-radius: 0px;
 	    padding-left:0px;
@@ -73,5 +95,28 @@ body.page-event, body.page-new-event{
 	    max-width:25em;
 
 	}
+
+	textarea.form-control.form-control{
+	    max-width:25em;
+	    border:1px solid lightgray;
+
+	}
+	
+	select.form-control.form-control{
+	    max-width:25em;
+	    border:1px solid lightgray;
+
+	}
+	textarea{
+	    height:100px;
+	    vertical-align:text-top;
+	    ~label{
+		vertical-align:text-top;
+	    }
+	}
+
+	
+	
+
     }
 }

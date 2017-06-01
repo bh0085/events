@@ -42,7 +42,6 @@ class Event(Base):
     location = Column(Unicode(255), nullable=False,default="")
     extlink = Column(Unicode(255), nullable=False,default="")
     tickets = Column(Unicode(255), nullable=False,default="")
-    pri = Column(Unicode(255), nullable=False,default="")
     recipe_num = Column(Unicode(255), nullable=False,default="")
     band_name = Column(Unicode(255), nullable=False,default="")
     series = Column(Unicode(255), nullable=False,default="")
@@ -51,17 +50,39 @@ class Event(Base):
     keywords = Column(Unicode(255), nullable=False,default="")
     category2 = Column(Unicode(255), nullable=False,default="")
     marketing = Column(Unicode(255), nullable=False,default="")
-    color = Column(Unicode(255), nullable=False,default="")
-    
-    aero_email = Column(Unicode(255), nullable=False,default="")
+
+    created = Column(DateTime, nullable=False)
+    updated= Column(DateTime, nullable=False)
+    created_user= Column(Unicode(255), nullable=False,default="")
+    updated_user= Column(Unicode(255), nullable=False,default="")
+
     notes = Column(Unicode(1023), nullable=False,default="")
     partner_name = Column(Unicode(255), nullable=False,default="")
     partner_email = Column(Unicode(255), nullable=False,default="")
     payment = Column(Unicode(255), nullable=False,default="")
-    pending = Column(Unicode(255), nullable=False,default="")
-    private = Column(Unicode(255), nullable=False,default="")
+    pending = Column(Boolean, nullable=False,default=False)
+    private = Column(Boolean, nullable=False,default=False)
+    deleted = Column(Boolean, nullable=False,default=False)
 
 
+    @property
+    def pri(self):
+        if self.category == "offsite":
+            return 11
+        elif self.category == "day":
+            return 9
+        elif self.category =="closed":
+            return 8
+        elif self.category =="modified hours":
+            return 8
+        elif self.category =="chocolate":
+            return 11
+        else:
+            return 10
+
+
+        return 
+        
 class Partner(Base):
     __tablename__ = 'partners'
 
@@ -72,7 +93,10 @@ class Partner(Base):
 import json, os, pprint
 
     
-def main():  
+def main():
+
+    print "not running this function. it will destroy everything"
+    return
     from sqlalchemy import create_engine
     from settings import DB_URI
     from db import nonflask_session as session
@@ -86,23 +110,35 @@ def main():
 
     events = []
     
-    with open(os.path.join(data_dir,"events1.json")) as f:
-            event_data = json.load(f)["all_events"]
-    for e in event_data:
-        e_cleaned = dict(**e)
-        e_cleaned["date"] = dateparser.parse(e["date"])
-        events.append(Event(**e_cleaned))
-
-    
-    with open(os.path.join(data_dir,"past_events1.json")) as f:
+    with open("/home/dan/aeronaut-events/actual_all_events.json") as f:
             event_data = json.load(f)
     for e in event_data:
         e_cleaned = dict(**e)
         e_cleaned["date"] = dateparser.parse(e["date"])
-        current_time = datetime.utcnow()
-        week_start = current_time - timedelta(days=current_time.weekday()+7)
-        if e_cleaned["date"] < week_start:       
-            events.append(Event(**e_cleaned))
+        
+        e_cleaned["updated"] = datetime.now()
+        e_cleaned["created"] = datetime.now()
+        e_cleaned["created_user"] = e["aero_email"].split("@")[0]
+        e_cleaned["updated_user"] = e["aero_email"].split("@")[0]
+
+        del e_cleaned["aero_email"]
+        del e_cleaned["pri"]
+        del e_cleaned["color"]
+        
+        events.append(Event(**e_cleaned))
+
+ 
+
+   #
+   #with open(os.path.join(data_dir,"past_events1.json")) as f:
+   #        event_data = json.load(f)
+   #for e in event_data:
+   #    e_cleaned = dict(**e)
+   #    e_cleaned["date"] = dateparser.parse(e["date"])
+   #    current_time = datetime.utcnow()
+   #    week_start = current_time - timedelta(days=current_time.weekday()+7)
+   #    if e_cleaned["date"] < week_start:       
+   #        events.append(Event(**e_cleaned))
 
 
         
@@ -113,5 +149,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pass
+    ##main()
 

@@ -3,37 +3,103 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-6 col-md-offset-3 col-xs-12">
+    <div class="col-md-9 col-md-offset-3 col-xs-12">
       <div id="main-editable" class="editable entity event view-mode">
-	<h2>{{event["name"]}}</h2><h4>({{event["date"]}})</h4>
+	<h2>{{event["name"]}}</h2>
+	<h4>DATE: ({{event["date"]}})</h4>
+	<h6>Created by: {{event["created_user"]}} at {{event["created"]}}</h6>
+	<h6>Last updated by: {{event["updated_user"]}} at {{event["updated"]}}</h6>
 
-	<form id="edit-event" action="/api/events/{{event.id}}" method="post">
+
+	<form id="edit-event" action="/bookings/api/events/{{event.id}}" method="post">
 	  <div class="form-state">
 	    <div class="form-group edit-button"><input class="edit-input" type="button" id="edit" value="edit"/></div>
-	    <div class="form-group submit-group submit-button"><input class="submit-input" type="submit" id="submit" value="submit"/></div>
+	    <div class="form-group submit-group submit-button"><input class="submit-input" type="submit" id="submit" value="submit changes"/></div>
+	    <div class="form-group submit-group delete-button"><input style="text-align:center;" class="delete-input" id=delete target={{url_for("bookings.delete_event",eventid=event.id)}} value="delete event"></input>
+	    </div>
 	  </div>
+
+	  
 	  
 	  {% for group in event_field_defs|groupby('grp') %}
 	  <div class="attribute-group grp-{{group.grouper}}">
+	    <h4>{{group_defs[group.grouper]['name']}}</h4>
 	    {% for field in group.list  %}
+	    {% if field["field"] != "na" %}
+	    
 	    
 	    <div class="form-group">
-	      <label for="inp{{field['name']}}">{{field['name']}}...</label>
-	      <input  type="{{field['field']}}"
-		      class="form-control {{field['field']}}"
-		      name="{{field['name']}}"
+	      <label class="{{'required' if field.required}}" {% if group.grouper == 5 %}style="display:none;"{% endif %} for="inp{{field['name']}}">{{field['name']}}...</label>
+
+	      {% if field["field"] == "bool" %}
+	      <select name="{{field['name']}}"
+		      class="form-control  {{field['field']}}"
 		      id="inp{{field['name']}}"
-		      value="{{event[field['name']]}}"
-		      placeholder="{{field['name']}}"
+		      disabled="true">
+
+		<option value="1" {% if event[field['name']] %} selected {% endif %}>Yes</option>
+		<option value="0" {% if event[field['name']] ==False %} selected {% endif %}>No</option>
+	      </select>
+
+	      {% elif field["field"] == "select" %}
+	      <select name="{{field['name']}}"
+		      class="form-control  {{field['field']}}"
+		      id="inp{{field['name']}}"
 		      disabled="true"
 		      {{'required="true"' if field.required}}
 		      >
-	    </div>	  
+
+		{% for option in selects[field['name']] %}
+		<option value="{{option}}" {% if event[field['name']] == option %} selected {% endif %}>{{option}}</option>
+		{% endfor %}
+	      </select>
+	      {% elif field["field"] == "textarea" %}
+	      <textarea name="{{field['name']}}"
+			class="form-control  {{field['field']}}"
+			id="inp{{field['name']}}"
+			disabled="true"
+			{{'required="true"' if field.required}}
+			>{{event[field["name"]]}}
+	      </textarea>
+
+	      {% else %}
+	      <input  type="{{field['field']}}"
+		      class="form-control {{field['field']}}"
+		      name="{{field['name']}}"
+	id="inp{{field['name']}}"
+	value="{{event[field['name']]}}"
+		      placeholder="{{field['name']}}"
+		      disabled="true"
+		      {{'required="true"' if field.required}}
+		      {% if group.grouper == 5 %}style="display:none;"{% endif %}
+
+		      >
+	      {% endif %}
+	    </div>
+
+	    {% endif %}
 	    {% endfor %}
 	  </div>
 	  {% endfor %}
-	  
+<!--
+	  <div class="form-group">
+	    <label for="inpdeleted">DELETE???</label>
+	    <select name="deleted"
+		    class="form-control  select"
+		    id="inpdeleted"
+		    disabled="true">
+
+	      <option value="0" {% if event["deleted"] %} selected {% endif %}>No</option>
+	      <option value="1" {% if event["deleted"] == True %} selected {% endif %}>Yes</option>
+	    </select>
+	    
+	  </div>
+-->
+
+
 	</form>
+
+
       </div>
     </div>
   </div>
