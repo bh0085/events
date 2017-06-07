@@ -64,8 +64,8 @@ body.page-new-event input.form-control.form-control.form-control:required {
     background-image: repeating-linear-gradient(100deg, #ccc, #ccc 30px, #dbdbdb 30px, #dbdbdb 60px); }
 body.page-event .edit-mode .attribute-group.unhidden,
 body.page-new-event .edit-mode .attribute-group.unhidden {
-  background-image: repeating-linear-gradient(100deg, rgba(0, 0, 255, 0.4), rgba(0, 0, 255,
-    0.4) 30px, rgba(0, 0, 255, 0.1) 30px, rgba(0, 0, 255, 0.1) 60px); }
+  background-image: repeating-linear-gradient(100deg, rgba(0, 0, 255, 0.3), rgba(0, 0, 255,
+    0.3) 30px, rgba(0, 0, 255, 0.1) 30px, rgba(0, 0, 255, 0.1) 60px); }
 body.page-event .attribute-group, body.page-new-event .attribute-group {
   margin-top: 5px;
   margin-top: 10px;
