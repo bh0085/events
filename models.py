@@ -19,7 +19,9 @@ from sqlalchemy import Column, Integer, Numeric, String, Unicode, Text, Date, Da
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
-Base = declarative_base()
+from flask_sqlalchemy import SQLAlchemy
+db2 = SQLAlchemy()
+
 
 # enforce foreign keys in sqlite
 @event.listens_for(Engine, "connect")
@@ -29,7 +31,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
        cursor.execute("PRAGMA foreign_keys=ON")
        cursor.close()
 
-class Event(Base):
+class Event(db2.Model):
     __tablename__ = 'events'
 
     id = Column(Integer, primary_key=True)
@@ -64,6 +66,15 @@ class Event(Base):
     private = Column(Boolean, nullable=False,default=False)
     deleted = Column(Boolean, nullable=False,default=False)
 
+    offsite_address=Column(Unicode(255),nullable=False, default="")
+    offsite_name=Column(Unicode(255),nullable=False, default="")
+    series_name=Column(Unicode(255),nullable=False, default="")
+    private_invoiceamount =Column(Unicode(255),nullable=False, default="")
+    private_invoicepaid=Column(Boolean,nullable=False, default=False)
+    private_numguests=Column(Unicode(255),nullable=False, default="")
+    private_barminimum=Column(Unicode(255),nullable=False, default="")
+    private_invoicenum=Column(Unicode(255),nullable=False, default="")
+    private_eventtype=Column(Unicode(255),nullable=False, default="")
 
     @property
     def pri(self):
@@ -83,7 +94,7 @@ class Event(Base):
 
         return 
         
-class Partner(Base):
+class Partner(db2.Model):
     __tablename__ = 'partners'
 
     id = Column(Integer, primary_key=True)

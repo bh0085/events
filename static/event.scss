@@ -6,7 +6,8 @@ body.page-event, body.page-new-event{
 
     .container{ padding-left:100px; }
  
-  
+
+    
 
     .editable{
 	&.edit-mode{
@@ -57,14 +58,39 @@ body.page-event, body.page-new-event{
 	box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
     }
 
+
+    .view-mode{
+	.attribute-group.unhidden{
+	    //border-top: 5px dashed gray;
+	    //border-bottom: 4px dashed gray; 
+	    background-image: repeating-linear-gradient(100deg, #ccc, #ccc 30px, #dbdbdb 30px, #dbdbdb 60px);
+	}
+    }
+
+    .edit-mode{
+	.attribute-group.unhidden{
+	    //border-top: 5px dashed green;
+	    //border-bottom: 4px dashed green; 
+	    background-image: repeating-linear-gradient(100deg, rgba(0,255,0,.4), rgba(0,255,0,.4) 30px, rgba(0,255,0,.1) 30px, rgba(0,255,0,.1) 60px);
+	}
+    }
+    
+    
     .attribute-group{
+	margin-top:5px;
 	margin-top:10px;
-	margin-top:40px;
+	padding-bottom:10px;
+	padding-top:10px;
+	padding-left:5px;
 	input:required{
 	    border:1px solid $blue;
 	}
+
 	&.grp-0{
 	    display:none;
+	}
+	h4{
+	    padding-left:20px;
 	}
 	&:not(.grp-1){
 	    

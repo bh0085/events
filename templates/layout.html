@@ -23,6 +23,14 @@
     <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
     {% endassets %}
 
+    
+    <script type="text/javascript">
+
+      console.log("HELLO")
+      var group_defs={{group_defs|safe}}
+    </script>
+
+
   </head>
   <body class="page-{{page['id']}}" >
     <nav class="navbar navbar-inverse">

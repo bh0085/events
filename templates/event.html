@@ -21,8 +21,8 @@
 
 	  
 	  
-	  {% for group in event_field_defs|groupby('grp') %}
-	  <div class="attribute-group grp-{{group.grouper}}">
+	  {% for group in event_field_defs|groupby('grp') | sortgroups %}
+	  <div class="attribute-group grp-{{group.grouper}} {{'hidden' if group_defs[group.grouper].get('type') == 'hidden'}} {{'unhidden' if group_defs[group.grouper].get('type') == 'hidden'}} ">
 	    <h4>{{group_defs[group.grouper]['name']}}</h4>
 	    {% for field in group.list  %}
 	    {% if field["field"] != "na" %}

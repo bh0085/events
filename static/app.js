@@ -10,6 +10,39 @@ $(
 	    formatter:"ampm",
 	});
 	*/
+
+	$.each(group_defs,function(k,e){
+	    if(e.triggertype=="selection"){
+		var tgt = $('[name="'+e.triggername+'"]')
+		var val = e.triggervalue
+		var dst = $('.grp-'+k)
+
+		tgt.on("change",function(){
+		    if(tgt.val() == val){
+			dst.toggleClass("hidden",false)
+		    }else{
+			dst .toggleClass("hidden",true)
+		    }
+		})
+		tgt.trigger("change")
+	    }
+	    if(e.triggertype=="any"){
+		var tgt = $('[name="'+e.triggername+'"]')
+		var val = e.triggervalue
+		dst = $('.grp-'+k)
+		console.log(dst)
+
+		tgt.on("change",function(){
+		    if(tgt.val() != ""){
+			dst.toggleClass("hidden",false)
+			$(dst).find("input").val(tgt.val())
+		    }else{
+			dst.toggleClass("hidden",true)
+		    }
+		})
+		tgt.trigger("change")
+	    }
+	})
 	
 	$("#edit").click(function(){
 	    console.log("EDITING")

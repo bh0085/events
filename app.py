@@ -12,18 +12,20 @@ from operator import itemgetter
 from sqlalchemy import or_
 
 from flask import Blueprint
-
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, jsonify
 from flask import render_template, redirect, request, url_for, session as flask_session
 from flask_restful import Api, Resource, reqparse, abort, fields, inputs, marshal_with
 from flask_assets import Environment, Bundle
+
+from flask_migrate import Migrate
 
 
 from db import Session
 from flask_sqlalchemy_session import flask_scoped_session
 from sqlalchemy import func
 
-from models import Event, Partner
+from models import Event, Partner, db2
 
 bookings = Blueprint('bookings', __name__,
                template_folder='templates')
@@ -31,8 +33,13 @@ bookings = Blueprint('bookings', __name__,
 
 
 app = Flask(__name__,static_url_path='/bookings/static')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./events.db'
+
 api = Api(bookings)
 
+
+db2.init_app(app) 
+migrate = Migrate(app, db2)
 
 assets = Environment(app)
 assets.url = app.static_url_path
@@ -62,32 +69,60 @@ fields_map = {
 event_field_defs = ([
     ('id'         ,{"field":"id",
                     "grp":5}),
+    ('category'   ,{"field":"select",
+                    "grp":1,
+                    "required":True}),
     ('name'       ,{"field":"text",
                     "grp":1,
                     "required":True}),
     ('date'       ,{"field":"date",
                     "grp":1,
                     "required":True}),
-    ('category'   ,{"field":"select",
-                    "grp":1,
-                    "required":True}),
-    ('location'   ,{"field":"select",
-                    "grp":1,
-                    "required":True}),
     ('start'      ,{"field":"time",
                     "grp":1,}),
     ('end'        ,{"field":"time",
                     "grp":1}),
+    ('location'   ,{"field":"select",
+                    "grp":2,
+                    "required":True}),
+    ('series'     ,{"field":"select",
+                    "grp":2}),
+    ('offsite_address',{"field":"text",
+                        "grp":"2a"}),
+    ('offsite_name',{"field":"text",
+                     "grp":"2a"}),
+    ('band_name'  ,{"field":"text",
+                    "grp":"1b"}),
+    ('series_name',{"field":"text",
+                        "grp":5}),
+    
+    ('private_invoiceamount',{"field":"text",
+                              "grp":"2c"}),
+    
+    ('private_invoicepaid',{"field":"bool",
+                              "grp":"2c"}),
+    
+    ('private_numguests',{"field":"text",
+                              "grp":"2c"}),
+    
+    ('private_barminimum',{"field":"text",
+                              "grp":"2c"}),
+
+    ('private_invoicenum',{"field":"text",
+                              "grp":"2c"}),
+    
+    ('private_eventtype',{"field":"text",
+                              "grp":"2c"}),
     ('description',{"field":"text",
                     "grp":1}),
     ('payment'  ,{"field":"text",
                   "grp":3}),
     ('notes'      ,{"field":"textarea",
-                    "grp":1}),
+                    "grp":3}),
     ('extlink'    ,{"field":"text",
-                    "grp":2}),
+                    "grp":3}),
     ('tickets'    ,{"field":"text",
-                    "grp":2}),
+                    "grp":3}),
     ('partner_email',{"field":"text",
                       "grp":3}),
     ('partner_name' ,{"field":"text",
@@ -95,12 +130,8 @@ event_field_defs = ([
     ('pending'  ,{"field":"bool",
                   "grp":4}),
     ('private'  ,{"field":"bool",
-                  "grp":4}),
+                  "grp":2}),
     ('recipe_num' ,{"field":"text",
-                    "grp":5}),
-    ('band_name'  ,{"field":"text",
-                    "grp":5}),
-    ('series'     ,{"field":"text",
                     "grp":5}),
     ('source'     ,{"field":"text",
                     "grp":5}),
@@ -119,7 +150,9 @@ event_field_defs = ([
     ('created',{"field":"na",
                 "grp":5}),
     ('updated',{"field":"na",
-                "grp":5})
+                "grp":5}),
+
+    
      
 ])
 
@@ -268,8 +301,8 @@ def format_time(value):
     try:
         fields = value.split(":")
     
-        hour24 = fields[0]
-        minute = fields[1]
+        hour24 = int(fields[0])
+        minute = int(fields[1])
         ampm = "AM" if hour24 < 12 else "PM"
         return "{0}{1}{2}".format((int(hour24 )-1)%12 + 1,":{0}".format(int(minute)) if int(minute) !=0 else "", ampm)
     except Exception, e:
@@ -281,10 +314,14 @@ def weekday(value):
     #return babel.dates.format_datetime(value, "EE").lower()
     return value.strftime("%a").lower()
 
+def sortgroups(grouplist):
+    return sorted(grouplist, key = lambda x:str( x.grouper)[0])
 
 app.jinja_env.filters['datetime'] = format_datetime
 app.jinja_env.filters['time'] = format_time
 app.jinja_env.filters['weekday'] = weekday
+app.jinja_env.filters['sortgroups'] = sortgroups
+
 
 from sqlalchemy.sql import extract
 
@@ -437,13 +474,66 @@ locations = [
     "other",
 ]
 
+
+series = [
+    "",
+    "allseries",
+    "bbb",
+    "biketalk",
+    "boardgames",
+    "boycott",
+    "byop",
+    "calendar",
+    "djs",
+    "duckday",
+    "duckheadliner",
+    "ducksalon",
+    "ducktalk",
+    "duckvillage",
+    "forrest",
+    "funkflights",
+    "latenight",
+    "latenitebites",
+    "monday",
+    "pindrop",
+    "freeform fun",
+    "silentmovies",
+    "trivia",
+    "weekend",
+    "css",
+    "closed",
+    "shows",
+    "community",
+    "beers",
+    "misc",
+    "karaoke",
+    "special"
+]
+
 event_grp_defs ={
-    1:{"name":"main"},
-    2:{"name":"marketing"},
+    1:{"name":"public info"},
+    2:{"name":"internal info"},
+    "2a":{"name":"offsite event info",
+          "type":"hidden",
+          "triggername":"location",
+          "triggertype":"selection",
+          "triggervalue":"offsite"},
+    "1b":{"name":"band details",
+          "type":"hidden",
+          "triggername":"category",
+          "triggertype":"selection",
+          "triggervalue":"band"},    
+    "2c":{"name":"private event info",
+          "type":"hidden",
+          "triggername":"private",
+          "triggertype":"selection",
+          "triggervalue":"1"},
     3:{"name":"partner"},
     4:{"name":"flags"},
     5:{"name":""}
 }
+
+
 
 @bookings.route("/event/delete/<eventid>", methods=['GET', 'POST'])
 def delete_event(eventid):
@@ -462,7 +552,8 @@ def event(id):
                            page={"id":"event"},
                            event_field_defs=jinja_event_defs,
                            selects={"category":event_categories,
-                                    "location":locations},
+                                    "location":locations,
+                                    "series":series},
                            group_defs = event_grp_defs)
 
 @bookings.route('/new')
@@ -471,7 +562,8 @@ def new_event():
                            page={"id":"new-event"},
                            event_field_defs=jinja_event_defs,
                            selects={"category":event_categories,
-                                    "location":locations},
+                                    "location":locations,
+                                    "series":series},
                            group_defs = event_grp_defs)
 
 
