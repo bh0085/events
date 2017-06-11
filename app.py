@@ -6,7 +6,7 @@ from collections import OrderedDict
 import aniso8601
 from datetime import date, timedelta
 import datetime
-import dateparser
+import dateparser, urllib2
 from operator import itemgetter
 
 from sqlalchemy import or_
@@ -75,6 +75,14 @@ event_field_defs = ([
     ('name'       ,{"field":"text",
                     "grp":1,
                     "required":True}),
+    
+    ('band_name'  ,{"field":"text",
+                    "grp":1,
+                    "typeahead":"/bookings/bandnames",
+                    "alternates":"name",
+                    "triggertype":"select",
+                    "triggername":"category",
+                    "triggervalue":"band"}),
     ('date'       ,{"field":"date",
                     "grp":1,
                     "required":True}),
@@ -91,8 +99,6 @@ event_field_defs = ([
                         "grp":"2a"}),
     ('offsite_name',{"field":"text",
                      "grp":"2a"}),
-    ('band_name'  ,{"field":"text",
-                    "grp":"1b"}),
     ('series_name',{"field":"text",
                         "grp":5}),
     
@@ -325,6 +331,12 @@ app.jinja_env.filters['sortgroups'] = sortgroups
 
 from sqlalchemy.sql import extract
 
+@bookings.route('/bandnames')
+def bandnames():
+    data =json.load( urllib2.urlopen("http://52.70.165.218:5052/bandnames.json"))
+    return jsonify(data)
+    
+
 
 @bookings.route('/')
 def index():
@@ -448,19 +460,21 @@ def checks():
                                  "week":week_start})
 
 event_categories = [
-    "event",
+    "",
     "beer",
     "food",
+    "trivia",
+    "feature",
     "band",
     "talk",
-    "record",
+    "dj",
     "bike",
-    "offsite",
     "art",
     "chocolate",
     "videogames",
     "modified hours",
-    "closed"
+    "closed",
+    "other"
 ]
 
 locations = [

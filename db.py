@@ -7,3 +7,5 @@ Session = sessionmaker(autocommit=False,
                        autoflush=True,
                        bind=create_engine(DB_URI, echo=True))
 nonflask_session = scoped_session(Session)
+
+

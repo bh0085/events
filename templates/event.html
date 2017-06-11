@@ -28,7 +28,14 @@
 	    {% if field["field"] != "na" %}
 	    
 	    
-	    <div class="form-group">
+	    <div class="form-group {% if field.alternates %} alternates{% endif %}"
+		 {% if field.alternates %}
+		 alternates="{{field.alternates}}"
+		 alttrigger="{{field.triggername}}"
+		 alttriggervalue="{{field.triggervalue}}"
+		 {% endif %}
+		 contains="{{field.name}}"
+		 >
 	      <label class="{{'required' if field.required}}" {% if group.grouper == 5 %}style="display:none;"{% endif %} for="inp{{field['name']}}">{{field['name']}}...</label>
 
 	      {% if field["field"] == "bool" %}
@@ -64,12 +71,13 @@
 
 	      {% else %}
 	      <input  type="{{field['field']}}"
-		      class="form-control {{field['field']}}"
+		      class="event-field form-control {{field['field']}} {{'typeahead' if field['typeahead']}}"
 		      name="{{field['name']}}"
 	id="inp{{field['name']}}"
 	value="{{event[field['name']]}}"
 		      placeholder="{{field['name']}}"
 		      disabled="true"
+		      {% if field['typeahead'] %} typeahead="{{field['typeahead']}}"  autocomplete="off" {% endif %},
 		      {{'required="true"' if field.required}}
 		      {% if group.grouper == 5 %}style="display:none;"{% endif %}
 
