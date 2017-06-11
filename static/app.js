@@ -6,25 +6,18 @@ $(
 
 	$.each($(".typeahead"),function(i,e){
 	    // Using YQL and JSONP
-	    console.log("URL")
-	    console.log( $(e).attr("typeahead"))
+	    console.log("LOOPING TYPEAHEADS")
+	    //console.log("URL")
+	    //console.log( $(e).attr("typeahead"))
 	    $.ajax({
-
-		
 		url: $(e).attr("typeahead"),
-		
 		// The name of the callback parameter, as specified by the YQL service
 		jsonp: "callback",
-		
 		// Tell jQuery we're expecting JSONP
 		dataType: "json",
-		
-		
 		// Work with the response
 		success: function( json ) {
-		    // constructs the suggestion engine
-
-		   
+		    // constructs the suggestion engine  
 		    console.log(json)
 		    var items = new Bloodhound({
 			datumTokenizer: Bloodhound.tokenizers.whitespace,
@@ -33,6 +26,8 @@ $(
 			local: json
 		    });
 
+		    console.log("CREATING TYPEAHEADS");
+		    typee=  e;
 		    $(e).typeahead({
 			hint: true,
 			highlight: true,
@@ -42,8 +37,6 @@ $(
 				       name: 'items',
 				       source: items
 				   });
-		    
-
 		}
 	    });	    
 	})
@@ -60,15 +53,8 @@ $(
 
 		var trigger_val = $(e).attr("alttriggervalue")
 		var thisfield = $(e)
-
-		console.log(trigger_inp)
-		console.log(altfield)
-		
 		
 		$(trigger_inp).on("change",function(){
-		    console.log("changing")
-		    console.log($(trigger_inp).val())
-		    console.log(trigger_val)
 		    if($(trigger_inp).val() == trigger_val){
 			thisfield.toggleClass("hidden",false)
 			alt_el.toggleClass("hidden",true)
@@ -134,7 +120,12 @@ $(
 	
 	$("#edit-event").submit(function(ev){
 	    var data = 	$( "#edit-event" ).serialize()
-	    	    
+	    d = data
+	    console.log( data)
+	    if (data.id )
+	    {
+		console.log("EDIT!")
+
 	    $.post(
 		$("#edit-event").attr("action"),
 		data,
@@ -142,10 +133,21 @@ $(
 		    location.reload()
 		}
 	    )
+	    } else {
+		console.log("NEW!")
+		$.post(
+		    $("#edit-event").attr("action"),
+		    data,
+		    function(data){
+			window.location.href = '/bookings/event/'+data.id; //relative to domain
+		    }	
+		)
+	    }
 	    
 	   		
 	    return false
 	})
+
 
 	
 	$("#delete").click(function(){
@@ -161,20 +163,7 @@ $(
 	    }
 	})
 
-	$("#new-event").submit(function(ev){
-	    var data = 	$( "#new-event" ).serialize()
-	    $.post(
-		$("#new-event").attr("action"),
-		data,
-		function(data){
-		    window.location.href = '/bookings/event/'+data.id; //relative to domain
-		}
-		
-	    )
 
-	    
-	    return false
-	})
     });
 
 

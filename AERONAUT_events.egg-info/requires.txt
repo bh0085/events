@@ -1,6 +1,9 @@
 flask
+flask-migrate
+flask-debugtoolbar
 flask-restful
 flask_assets
+flask-sqlalchemy
 sqlalchemy
 flask-sqlalchemy-session
 aniso8601

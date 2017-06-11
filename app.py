@@ -9,6 +9,7 @@ import datetime
 import dateparser, urllib2
 from operator import itemgetter
 
+
 from sqlalchemy import or_
 
 from flask import Blueprint
@@ -34,6 +35,7 @@ bookings = Blueprint('bookings', __name__,
 
 app = Flask(__name__,static_url_path='/bookings/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./events.db'
+
 
 api = Api(bookings)
 
@@ -265,8 +267,20 @@ class EventListResource(Resource):
 
     @marshal_with(event_fields)
     def post(self):
+
+
+        #raise
+        #return 'Ohnoes'
+        #prs0 = reqparse.RequestParser()
+        #sample_args = prs0.parse_args()
+        #raise Exception()
+
         args = event_parser.parse_args()
+        
+        
         obj = Event(**args)
+
+
 
         name = request.headers.get('X-Forwarded-User', "debug")
         obj.updated_user = name
