@@ -35,7 +35,7 @@
 	<span class="booking-attr"><a href="{{url_for('bookings.event',id=event.id)}}">{{ event.name }}</a></span>
 	<span class="booking-attr" style="color:lightgray;">{{ event.description }}</span>
 
-	<span class="bookitng attr optional offsite" style="color:red;"> {{" ["+event.location+"]" if event.location == "offsite"}}</span>
+	<span class="booking attr optional offsite" style="color:red;"> {{" ["+event.location+"]" if event.location == "offsite"}}</span>
 	<br/>
 	{% endfor %}
 

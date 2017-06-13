@@ -6,17 +6,23 @@
       <h1>CHECKS</h1><h2>WEEK OF {{page.week |datetime}}</h2>
       {% for group in events|sort(attribute='date') |groupby('date') %}
       <div class="attribute-group day-group grp-{{group.grouper}}">
+	<div class="group-header ">(<span class=" weekday {{group.grouper | weekday }}">{{ group.grouper | weekday }}</span>) {{ group.grouper }}</div>
+	{% for event in group.list  %}
+	<b>{{ event.payment }}</b> for <span class="offsite" style="color:red;">{{" ["+event.location+"]" if event.location == "offsite"}}</span> {{event.category}},	<a href="/event/{{event.id}}">{{event.name}}</a><br/><!-- requested by: {{event.aero_email}}<br/>-->
+	{% endfor %}
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <div class="col-md-6 col-md-offset-3 col-xs-12">
+      <h2>BANDS WITHOUT CHECKS</h2>
+      {% for group in nonpaid_bands|sort(attribute='date') |groupby('date') %}
+      <div class="attribute-group day-group grp-{{group.grouper}}">
 	<div class="group-header ">{{ group.grouper }}</div>
 	{% for event in group.list  %}
-	<a href="/event/{{event.id}}">{{ event.payment }}</a>
-	<dl>
-	  {% if event.aero_email != "" %}<dt>aero</dt>:<dd> {{event.aero_email}}</dd>{% endif %}
-	  {% if event.partner_name != "" %}<dt>contact</dt>:<dd> {{event.aero_email}}</dd>{% endif %}
-	  {% if event.partner_email != "" %}<dt>email</dt>:<dd> {{event.partner_email}}</dd>{% endif %}
-	  {% if event.source != "" %}<dt>source</dt>:<dd> {{event.source}}</dd>{% endif %}
-	</dl>
+	<b>{{ event.payment }}</b> for {{event.category}},	<a href="/event/{{event.id}}">{{event.name}}</a><br/><!-- requested by: {{event.aero_email}}<br/>-->
 	{% endfor %}
-
       </div>
       {% endfor %}
 

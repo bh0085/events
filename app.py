@@ -471,8 +471,13 @@ def checks():
 
  
     events = session.query(Event).filter(Event.deleted != True).filter(Event.date > week_start).filter(Event.date <= week_end).filter(Event.payment != "").all()
+
+    nonpayment =  session.query(Event).filter(Event.deleted != True).filter(Event.date > week_start).filter(Event.date <= week_end).filter(Event.payment == "").filter(Event.category=="music").all()
+
+    
     return render_template('checks.html',
                            events=events,
+                           nonpaid_bands=nonpayment,
                            page={"id":"checks",
                                  "week":week_start})
 
