@@ -20,6 +20,8 @@ body.page-event, body.page-new-event{
 	}
 	
     }
+
+
     .form-state{
 	.submit-group{
 	    display:inline-block;
@@ -53,9 +55,10 @@ body.page-event, body.page-new-event{
 	}
 	font-weight:bold;
     }
-    
+    .edit-mode{
     input.form-control.form-control.form-control:required {
 	box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
+    }
     }
 
 
@@ -63,7 +66,7 @@ body.page-event, body.page-new-event{
 	.attribute-group.unhidden{
 	    //border-top: 5px dashed gray;
 	    //border-bottom: 4px dashed gray; 
-	    background-image: repeating-linear-gradient(100deg, #ddd, #ddd 30px, #ebebeb 30px, #ebebeb 60px);
+	    //background-image: repeating-linear-gradient(100deg, #ddd, #ddd 30px, #ebebeb 30px, #ebebeb 60px);
 	}
     }
 
@@ -72,7 +75,7 @@ body.page-event, body.page-new-event{
 	.alternates{
 	    //border-top: 5px dashed gray;
 	    //border-bottom: 4px dashed gray; 
-	    background-image: repeating-linear-gradient(100deg, #ddd, #ddd 30px, #ebebeb 30px, #ebebeb 60px);
+	    //background-image: repeating-linear-gradient(100deg, #ddd, #ddd 30px, #ebebeb 30px, #ebebeb 60px);
 	}
     }
 
@@ -115,15 +118,31 @@ body.page-event, body.page-new-event{
 	    label{opacity:.5;}
 	}
     }
-    .view-mode .form-group .form-control{
-	border: 1px solid lightgray;
+    .view-mode .form-group .form-control.form-control{
+	//border: 1px solid lightgray;
+	background-color: white;
+	border: 0px solid white;
+	&input{
+	    border:1px solid white;
+	}
+	&select{
+	    border:1px solid white;
+	}
     }
     .edit-mode .form-group .form-control{
 	border:1px solid lightgray;
 	
     }
-    
+
+    .view-mode{
+	.form-group{
+	    margin-bottom:0px;
+	}
+    }
     .form-group{
+	>*{
+	   
+	}
 	.form-control{
 	    display:inline-block;
 	    border: 1px solid lightgray;

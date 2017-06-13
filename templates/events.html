@@ -5,7 +5,7 @@
 <div class="container">
 
   <div class="row">
-    <div class="col-md-6 col-md-offset-3 col-xs-12">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
       <ul>
 	<li><a href="{{url_for('bookings.index')}}?filters=[past]">all past events</a></li>	
 	<li><a href="{{url_for('bookings.index')}}?filters=[thismonth]">music this month</a></li>
@@ -24,12 +24,18 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6 col-md-offset-3 col-xs-12">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
       {% for group in events|sort(attribute='date') |groupby('date') %}
       <div class="attribute-group day-group grp-{{group.grouper}}">
 	<div class="group-header "><span class="weekday  {{ group.grouper | weekday }}">{{ group.grouper | weekday }}</span> {{ group.grouper }}</div>
 	{% for event in group.list  %}
-	{{ event.start | time }} <a href="{{url_for('bookings.event',id=event.id)}}">{{ event.name }}</a><br />
+	<span class="booking-attr">{{ event.start | time }}{% if event.end %}-{{ event.end | time }}{% endif %}</span>
+	<span class="booking-attr">{{ event.category }}</span>
+	<span class="booking-attr"><a href="{{url_for('bookings.event',id=event.id)}}">{{ event.name }}</a></span>
+	<span class="booking-attr" style="color:lightgray;">{{ event.description }}</span>
+
+	<span class="bookitng attr optional offsite" style="color:red;"> {{" ["+event.location+"]" if event.location == "offsite"}}</span>
+	<br/>
 	{% endfor %}
 
       </div>

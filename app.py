@@ -377,6 +377,8 @@ def index():
         events_q = events_q.filter(Event.private != "")
     if "duck" in filters:
         events_q = events_q.filter(Event.source == "duck")
+    if "trivia" in filters:
+        events_q = events_q.filter(Event.category == "trivia")
     if "checks" in filters:
         events_q = events_q.filter(Event.payment !="")
     if "music" in filters:
