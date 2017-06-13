@@ -401,12 +401,13 @@ def index():
         events_q = events_q.filter(extract('dow',Event.date) == 6)
 
 
-        
+    
         
         
         
     events = events_q.all()
-
+    events = sorted( events, key = lambda  x:x.start)
+    events = sorted( events, key = lambda x:x.pri)
     
     
     return render_template('events.html',
