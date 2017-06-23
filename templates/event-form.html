@@ -69,6 +69,7 @@
 	      id="inp{{field['name']}}"
 	      value="{{event[field['name']] if event else ''}}"
 	      placeholder="{{field['name']}}"
+	      {{'maxlength={0}'.format(field.maxlength) if field.maxlength}}
 	      {% if not page.id == "new-event" %} disabled="true" {% endif %}
 	      {% if field['typeahead'] %} typeahead="{{field['typeahead']}}"  autocomplete="off" {% endif %},
 	      {{'required="true"' if field.required}}
